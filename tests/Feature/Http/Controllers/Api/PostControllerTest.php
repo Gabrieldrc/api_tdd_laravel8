@@ -9,6 +9,7 @@ use Tests\TestCase;
 class PostControllerTest extends TestCase
 {
     use RefreshDatabase;
+
     public function test_store()
     {
         $this->withExceptionHandling();
@@ -21,5 +22,15 @@ class PostControllerTest extends TestCase
             ->assertStatus(201); //Ok, creado un recurso
 
         $this->assertDatabaseHas('posts', ['title' => 'El posts de prueba']);
+    }
+
+    public function test_validate_title()
+    {
+        $response = $this->json('POST', '/api/posts', [
+            'title' => ''
+        ]);
+
+        $response->assertStatus(422) // Estatus HTTP 422
+            ->assertJsonValidationErrors('title');
     }
 }
